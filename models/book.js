@@ -34,6 +34,9 @@ const bookSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
+//bookSchema - схема для внутрішньої перевірки; після того як дані з запиту (з фронтенду) пройшли перевірку Joi,
+//  яка є мідлварою перед винонанням контролера у своєму роуті, далі відбувається збереження даних у базі даних:
+// тут mongoose застосовує свою перевірку перед збереженням  bookSchema.post("save", handleMongooseError);
 bookSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({

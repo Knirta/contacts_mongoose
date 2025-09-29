@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import booksRouter from "./routes/api/booksRouter.js";
+import { errorHandler } from "./middlewares/index.js";
 
 dotenv.config();
 
@@ -19,9 +20,6 @@ app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-app.use((err, req, res, next) => {
-  const { status = 500, message = "Server error" } = err;
-  res.status(status).json({ message });
-});
+app.use(errorHandler);
 
 export default app;
