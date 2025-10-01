@@ -1,9 +1,11 @@
 import { Book } from "../models/book.js";
-import { ctrlWrapper } from "../helpers/index.js";
+import { getAll } from "../services/books.js";
+import { ctrlWrapper, parsePaginationParams } from "../helpers/index.js";
 import createHttpError from "http-errors";
 
-const getAll = async (_, res) => {
-  const result = await Book.find({}, "-createdAt -updatedAt");
+const getAllController = async (req, res) => {
+  const { page, perPage } = parsePaginationParams(req.query);
+  const result = await getAll({ page, perPage });
   res.json(result);
 };
 
@@ -50,7 +52,7 @@ const deleteById = async (req, res) => {
 };
 
 export default {
-  getAllBooks: ctrlWrapper(getAll),
+  getAllBooks: ctrlWrapper(getAllController),
   getOneBook: ctrlWrapper(getById),
   createBook: ctrlWrapper(add),
   updateBook: ctrlWrapper(updateById),

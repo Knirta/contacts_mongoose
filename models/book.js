@@ -40,8 +40,8 @@ const bookSchema = new Schema(
 bookSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({
-  title: Joi.string().required(),
-  author: Joi.string().required(),
+  title: Joi.string().min(3).max(21).required(),
+  author: Joi.string().min(3).max(21).required(),
   favorite: Joi.boolean(),
   genre: Joi.string()
     .valid(...genreList)
