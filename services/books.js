@@ -7,11 +7,23 @@ export const getAll = async ({
   perPage = 5,
   sortOrder = SORT_ORDER.ASC,
   sortBy = "_id",
+  filter = {},
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
   const booksQuery = Book.find();
+
+  if (filter.genre) {
+    booksQuery.where("genre").equals(filter.genre);
+  }
+  if (filter.maxRating) {
+    booksQuery.where("rating").lte(filter.maxRating);
+  }
+  if (filter.minRating) {
+    booksQuery.where("rating").gte(filter.minRating);
+  }
+
   const booksCount = await Book.find().merge(booksQuery).countDocuments();
 
   const books = await booksQuery

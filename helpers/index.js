@@ -3,6 +3,7 @@ import handleMongooseError from "./handleMongooseError.js";
 import parsePaginationParams from "./parsePaginationParams.js";
 import calculatePaginationData from "./calculatePaginationData.js";
 import parseSortParams from "./parseSortParams.js";
+import parseFilterParams from "./parseFilterParams.js";
 
 export {
   ctrlWrapper,
@@ -10,4 +11,5 @@ export {
   parsePaginationParams,
   calculatePaginationData,
   parseSortParams,
+  parseFilterParams,
 };

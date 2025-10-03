@@ -4,13 +4,16 @@ import {
   ctrlWrapper,
   parsePaginationParams,
   parseSortParams,
+  parseFilterParams,
 } from "../helpers/index.js";
 import createHttpError from "http-errors";
 
 const getAllController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortOrder, sortBy } = parseSortParams(req.query);
-  const result = await getAll({ page, perPage, sortOrder, sortBy });
+  const filter = parseFilterParams(req.query);
+
+  const result = await getAll({ page, perPage, sortOrder, sortBy, filter });
   res.json(result);
 };
 
