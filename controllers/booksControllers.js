@@ -9,11 +9,19 @@ import {
 } from "../helpers/index.js";
 
 const getAllController = async (req, res) => {
+  const { _id: owner } = req.user;
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortOrder, sortBy } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
 
-  const result = await getAll({ page, perPage, sortOrder, sortBy, filter });
+  const result = await getAll({
+    page,
+    perPage,
+    sortOrder,
+    sortBy,
+    filter,
+    owner,
+  });
   res.json(result);
 };
 
@@ -28,7 +36,8 @@ const getById = async (req, res) => {
 };
 
 const add = async (req, res) => {
-  const result = await Book.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Book.create({ ...req.body, owner });
   res.status(201).json(result);
 };
 

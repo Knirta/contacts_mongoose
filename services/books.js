@@ -8,11 +8,15 @@ export const getAll = async ({
   sortOrder = SORT_ORDER.ASC,
   sortBy = "_id",
   filter = {},
+  owner,
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const booksQuery = Book.find();
+  const booksQuery = Book.find({ owner }, " -createdAt -updatedAt").populate(
+    "owner",
+    "name email"
+  );
 
   if (filter.genre) {
     booksQuery.where("genre").equals(filter.genre);
