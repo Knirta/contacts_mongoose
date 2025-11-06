@@ -46,6 +46,7 @@ const login = async (req, res) => {
   };
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "15h" });
+  await User.findByIdAndUpdate(user._id, { token });
 
   res.json({
     token,
@@ -58,8 +59,18 @@ const getCurrent = async (req, res) => {
   res.json({ name, email });
 };
 
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+
+  res.json({
+    message: "Logout is successful",
+  });
+};
+
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
+  logout: ctrlWrapper(logout),
 };

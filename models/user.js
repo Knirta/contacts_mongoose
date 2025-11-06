@@ -10,6 +10,7 @@ const userSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, unique: true, match: emailRegexp, required: true },
     password: { type: String, minlength: 6, required: true },
+    token: { type: String, default: "" },
   },
   { versionKey: false, timestamps: true }
 );
