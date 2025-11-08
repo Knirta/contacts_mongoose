@@ -1,6 +1,6 @@
 import express from "express";
 
-import { validateBody, authenticate } from "../../middlewares/index.js";
+import { validateBody } from "../../middlewares/index.js";
 import { schemas } from "../../models/user.js";
 import ctrl from "../../controllers/authController.js";
 
@@ -16,8 +16,8 @@ authRouter.post(
 //sign in
 authRouter.post("/login", validateBody(schemas.loginSchema), ctrl.login);
 
-authRouter.get("/current", authenticate, ctrl.getCurrent);
+authRouter.get("/current", ctrl.refresh);
 
-authRouter.post("/logout", authenticate, ctrl.logout);
+authRouter.post("/logout", ctrl.logout);
 
 export default authRouter;

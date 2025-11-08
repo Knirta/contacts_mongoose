@@ -1,76 +1,80 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+  refreshUser,
+} from "../services/auth.js";
+import { ctrlWrapper } from "../helpers/index.js";
 
-import { User } from "../models/user.js";
-import { ctrlWrapper, HttpError } from "../helpers/index.js";
+import { ONE_DAY } from "../constants/index.js";
 
-dotenv.config();
-const { SECRET_KEY } = process.env;
+const setupSession = (res, session) => {
+  res.cookie("refreshToken", session.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + ONE_DAY),
+  });
+
+  res.cookie("sessionId", session._id, {
+    httpOnly: true,
+    expires: new Date(Date.now() + ONE_DAY),
+  });
+};
 
 const register = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-
-  if (user) {
-    throw HttpError(409, "Email is already in use");
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const newUser = await User.create({ ...req.body, password: hashedPassword });
+  const newUser = await registerUser(req.body);
 
   res.status(201).json({
-    name: newUser.name,
-    email: newUser.email,
+    status: 201,
+    message: "Successfully registed an user",
+    data: {
+      name: newUser.name,
+      email: newUser.email,
+    },
   });
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const session = await loginUser(req.body);
 
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    throw HttpError(401, "Email or password is invalid");
-  }
-
-  const passwordCompare = await bcrypt.compare(password, user.password);
-
-  if (!passwordCompare) {
-    throw HttpError(401, "Email or password is invalid");
-  }
-
-  const payload = {
-    id: user._id,
-  };
-
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "15h" });
-  await User.findByIdAndUpdate(user._id, { token });
+  setupSession(res, session);
 
   res.json({
-    token,
+    status: 200,
+    message: "Successfully logged in an user!",
+    data: { accessToken: session.accessToken },
   });
 };
 
-const getCurrent = async (req, res) => {
-  const { name, email } = req.user;
+const logout = async (req, res) => {
+  const { sessionId } = req.cookies;
+  if (sessionId) {
+    await logoutUser(sessionId);
+  }
 
-  res.json({ name, email });
+  res.clearCookie("sessionId");
+  res.clearCookie("refreshToken");
+
+  res.status(204).send();
 };
 
-const logout = async (req, res) => {
-  const { _id } = req.user;
-  await User.findByIdAndUpdate(_id, { token: "" });
+const refresh = async (req, res) => {
+  const { sessionId, refreshToken } = req.cookies;
+  const session = await refreshUser({ sessionId, refreshToken });
+
+  setupSession(res, session);
 
   res.json({
-    message: "Logout is successful",
+    status: 200,
+    message: "Successfully refreshed a session",
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 };
 
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
-  getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  refresh: ctrlWrapper(refresh),
 };
