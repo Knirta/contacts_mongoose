@@ -63,7 +63,8 @@ const refreshUser = async ({ sessionId, refreshToken }) => {
     throw HttpError(401, "Session not found");
   }
 
-  const isRefreshTokenExpired = Date.now() > session.refreshTokenValidUntil;
+  const isRefreshTokenExpired =
+    new Date() > new Date(session.refreshTokenValidUntil);
   if (isRefreshTokenExpired) {
     throw HttpError(401, "Session token expired");
   }
