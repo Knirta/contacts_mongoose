@@ -1,6 +1,6 @@
 import { Book } from "../models/book.js";
 import { calculatePaginationData } from "../helpers/index.js";
-import { SORT_ORDER } from "../constants/index.js";
+import { SORT_ORDER, ROLES } from "../constants/index.js";
 
 export const getAll = async ({
   page = 1,
@@ -9,11 +9,13 @@ export const getAll = async ({
   sortBy = "_id",
   filter = {},
   owner,
+  role,
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
+  const roleFilter = role === ROLES.ADMIN ? {} : { owner };
 
-  const booksQuery = Book.find({ owner }, " -createdAt -updatedAt").populate(
+  const booksQuery = Book.find(roleFilter, " -createdAt -updatedAt").populate(
     "owner",
     "name email"
   );

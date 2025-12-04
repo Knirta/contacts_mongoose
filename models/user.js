@@ -3,6 +3,8 @@ import Joi from "joi";
 
 import { handleMongooseError } from "../helpers/index.js";
 
+import { ROLES } from "../constants/index.js";
+
 const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema(
@@ -10,6 +12,11 @@ const userSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, unique: true, match: emailRegexp, required: true },
     password: { type: String, minlength: 6, required: true },
+    role: {
+      type: String,
+      enum: [ROLES.ADMIN, ROLES.USER],
+      default: ROLES.USER,
+    },
   },
   { versionKey: false, timestamps: true }
 );

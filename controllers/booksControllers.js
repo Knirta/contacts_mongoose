@@ -9,7 +9,7 @@ import {
 } from "../helpers/index.js";
 
 const getAllController = async (req, res) => {
-  const { _id: owner } = req.user;
+  const { _id: owner, role } = req.user;
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortOrder, sortBy } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
@@ -21,6 +21,7 @@ const getAllController = async (req, res) => {
     sortBy,
     filter,
     owner,
+    role,
   });
   res.json(result);
 };
