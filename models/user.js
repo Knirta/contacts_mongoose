@@ -11,6 +11,7 @@ const userSchema = new Schema(
     email: { type: String, unique: true, match: emailRegexp, required: true },
     password: { type: String, minlength: 6, required: true },
     token: { type: String, default: "" },
+    avatarURL: { type: String, required: true },
   },
   { versionKey: false, timestamps: true }
 );
